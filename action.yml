@@ -1,13 +1,12 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: "Auto-Assign Reviewers"
+description: "Automatically Assign a reviewer to a PR"
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
-    required: true
-    default: '1000'
+  config:
+    description: "Path to config file"
+    default: ".github/auto-assign-reviewers.yaml"
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  reviewer:
+    description: "The selected reviewer"
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"
