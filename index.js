@@ -6,9 +6,13 @@ const assign = require("./auto-assign-reviewer")
 async function run() {
   try {
     const token = core.getInput("github-token", { required: true })
-    const github = getOctokit(token, {}).rest
-    console.log("github", github)
-    console.log("token", token)
+    let github = getOctokit(token, {})
+
+    if (!github) {
+      throw new Error("unable to get GitHub client")
+    }
+    github = github.rest
+
     assign({ github, context, core })
   } catch (error) {
     core.setFailed(error.message)

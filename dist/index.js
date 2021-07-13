@@ -22,18 +22,29 @@ module.exports = async ({ github, context, core }) => {
 
   // get open PRs on this repo
   // + get list of contributors to this repo
-  const [pullsResp, contributorsResp] = await Promise.all([
+  const [pullsResp, contributorsResp, collaboratorsResp] = await Promise.all([
     github.pulls.list({
       owner: context.repo.owner,
       repo: context.repo.repo,
+      per_page: 100,
     }),
     github.repos.listContributors({
       owner: context.repo.owner,
       repo: context.repo.repo,
+      per_page: 100,
+    }),
+    github.repos.listCollaborators({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      per_page: 100,
     }),
   ])
   const pulls = pullsResp.data
   const open_prs = pulls.length
+
+  core.startGroup("collaborators")
+  console.log(collaboratorsResp.data)
+  core.endGroup()
 
   // filter out [bot] users
   const contributors = contributorsResp.data
@@ -95,9 +106,13 @@ const assign = __nccwpck_require__(161)
 async function run() {
   try {
     const token = core.getInput("github-token", { required: true })
-    const github = getOctokit(token, {}).rest
-    console.log("github", github)
-    console.log("token", token)
+    let github = getOctokit(token, {})
+
+    if (!github) {
+      throw new Error("unable to get GitHub client")
+    }
+    github = github.rest
+
     assign({ github, context, core })
   } catch (error) {
     core.setFailed(error.message)
