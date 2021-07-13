@@ -8,7 +8,7 @@ async function run() {
     const token = core.getInput("github-token", {required: true})
     const github = getOctokit(token, {})
     assign({
-      github,
+      github.rest,
       context,
       core,
     })
