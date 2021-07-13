@@ -94,13 +94,11 @@ const assign = __nccwpck_require__(161)
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const token = core.getInput("github-token", {required: true})
-    const github = getOctokit(token, {})
-    assign({
-      github,
-      context,
-      core,
-    })
+    const token = core.getInput("github-token", { required: true })
+    const github = getOctokit(token, {}).rest
+    console.log("github", github)
+    console.log("token", token)
+    assign({ github, context, core })
   } catch (error) {
     core.setFailed(error.message)
   }
