@@ -74,6 +74,11 @@ module.exports = async ({ github, context, core }) => {
   // remove the PR owner from contention
   if (actor in reviews_per_reviewer) delete reviews_per_reviewer[actor]
 
+  // filter out contributors that are not collaborators
+  const collaborators = collaboratorsResp.data.map((c) => c.login)
+  for (user in reviews_per_reviewer)
+    if (!(login in contributors)) delete reviews_per_reviewer[user]
+
   const min_reviewer = min_key(reviews_per_reviewer)
 
   console.log("reviews per reviewer:", reviews_per_reviewer)
