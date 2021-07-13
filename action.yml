@@ -1,12 +1,16 @@
-name: "Auto-Assign Reviewers"
-description: "Automatically Assign a reviewer to a PR"
+name: Auto-Assign Reviewers
+description: Automatically Assign a reviewer to a PR
 inputs:
+  github-token:
+    description: The GitHub token used to authenticate
+    default: ${{ github.token }}
+    required: false
   config:
-    description: "Path to config file"
-    default: ".github/auto-assign-reviewers.yaml"
+    description: Path to config file
+    default: .github/auto-assign-reviewers.yaml
 outputs:
   reviewer:
-    description: "The selected reviewer"
+    description: The selected reviewer
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: node12
+  main: dist/index.js
