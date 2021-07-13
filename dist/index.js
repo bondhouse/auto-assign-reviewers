@@ -78,7 +78,7 @@ module.exports = async ({ github, context, core }) => {
   console.log(collaborators)
   core.endGroup()
   for (user in reviews_per_reviewer)
-    if (!(user in collaborators)) delete reviews_per_reviewer[user]
+    if (!collaborators.includes(user)) delete reviews_per_reviewer[user]
 
   console.log("reviews per reviewer:", reviews_per_reviewer)
 
