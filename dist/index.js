@@ -42,10 +42,6 @@ module.exports = async ({ github, context, core }) => {
   const pulls = pullsResp.data
   const open_prs = pulls.length
 
-  core.startGroup("collaborators")
-  console.log(collaboratorsResp.data)
-  core.endGroup()
-
   // filter out [bot] users
   const contributors = contributorsResp.data
     .map((c) => c.login)
@@ -74,14 +70,20 @@ module.exports = async ({ github, context, core }) => {
   // remove the PR owner from contention
   if (actor in reviews_per_reviewer) delete reviews_per_reviewer[actor]
 
+  console.log("before filter: reviews per reviewer:", reviews_per_reviewer)
+
   // filter out contributors that are not collaborators
   const collaborators = collaboratorsResp.data.map((c) => c.login)
+  core.startGroup("collaborators")
+  console.log(collaborators)
+  core.endGroup()
   for (user in reviews_per_reviewer)
-    if (!(login in contributors)) delete reviews_per_reviewer[user]
+    if (!(user in collaborators)) delete reviews_per_reviewer[user]
+
+  console.log("reviews per reviewer:", reviews_per_reviewer)
 
   const min_reviewer = min_key(reviews_per_reviewer)
 
-  console.log("reviews per reviewer:", reviews_per_reviewer)
   console.log("assigning review to", min_reviewer)
 
   core.setOutput("reviewer", min_reviewer)
