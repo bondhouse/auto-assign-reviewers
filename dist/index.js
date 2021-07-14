@@ -10,11 +10,6 @@ const min_key = (obj) =>
   Object.keys(obj).reduce((key, v) => (obj[v] < obj[key] ? v : key))
 
 module.exports = async ({ github, context, core }) => {
-  // dump the context
-  core.startGroup("action context")
-  console.log(context)
-  core.endGroup()
-
   const pr = context.payload.number
   const actor = context.actor
   console.log("pr #", pr)
@@ -95,10 +90,9 @@ module.exports = async ({ github, context, core }) => {
   core.endGroup()
   for (user in reviews_per_reviewer) {
     activity = collaboratorStats[user]
-    if (!activity)
-      console.log(`cannot assign ${user} (no activity) as reviewer`)
+    if (!activity) console.log(`won't assign ${user} (no activity) as reviewer`)
     if (!collaborators.includes(user))
-      console.log(`cannot assign ${user} (not a collaborator) as reviewer`)
+      console.log(`won't assign ${user} (not a collaborator) as reviewer`)
     if (!activity || !collaborators.includes(user)) {
       delete reviews_per_reviewer[user]
     }
@@ -118,6 +112,9 @@ module.exports = async ({ github, context, core }) => {
     pull_number: pr,
     reviewers: [min_reviewer],
   })
+  if (requestReviewersResp.status == 200) {
+    console.log("reviewer assigned successfully")
+  }
 
   return min_reviewer
 }
