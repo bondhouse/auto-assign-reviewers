@@ -111,7 +111,7 @@ module.exports = async ({ github, context, core }) => {
     pull_number: pr,
     reviewers: [min_reviewer],
   })
-  if (requestReviewersResp.status == 200) {
+  if (requestReviewersResp.status == 201) {
     console.log("reviewer assigned successfully")
   }
 
@@ -6468,7 +6468,12 @@ async function run() {
     }
     github = github.rest
 
-    assign({ github, context, core })
+    try {
+      assign({ github, context, core })
+    } catch (error) {
+      console.error("unable to auto assign reviewer:", error)
+      process.exit(1)
+    }
   } catch (error) {
     core.setFailed(error.message)
   }

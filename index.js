@@ -13,7 +13,12 @@ async function run() {
     }
     github = github.rest
 
-    assign({ github, context, core })
+    try {
+      assign({ github, context, core })
+    } catch (error) {
+      console.error("unable to auto assign reviewer:", error)
+      process.exit(1)
+    }
   } catch (error) {
     core.setFailed(error.message)
   }
