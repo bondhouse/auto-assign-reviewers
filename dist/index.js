@@ -8,6 +8,8 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 const min_key = (obj) =>
   Object.keys(obj).reduce((key, v) => (obj[v] < obj[key] ? v : key))
 
+const blacklisted_reviewers = ["dmsalomon"]
+
 module.exports = async ({ github, context, core }) => {
   const pr = context.payload.number
   const actor = context.actor
@@ -87,12 +89,18 @@ module.exports = async ({ github, context, core }) => {
   core.startGroup("collaborators")
   console.log(collaborators)
   core.endGroup()
-  for (user in reviews_per_reviewer) {
-    activity = collaboratorStats[user]
+  for (let user in reviews_per_reviewer) {
+    let activity = collaboratorStats[user]
     if (!activity) console.log(`won't assign ${user} (no activity) as reviewer`)
     if (!collaborators.includes(user))
       console.log(`won't assign ${user} (not a collaborator) as reviewer`)
-    if (!activity || !collaborators.includes(user)) {
+    if (blacklisted_reviewers.includes(user))
+      console.log(`won't assign ${user} (blacklist) as reviewer`)
+    if (
+      !activity ||
+      !collaborators.includes(user) ||
+      blacklisted_reviewers.includes(user)
+    ) {
       delete reviews_per_reviewer[user]
     }
   }
